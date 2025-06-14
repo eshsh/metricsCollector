@@ -1,4 +1,5 @@
 #pragma once
+#include <atomic>
 #include "../istat.h"
 
 namespace statistics {
@@ -7,17 +8,17 @@ struct Statistics final : public IStatisticsData {
     Statistics();
     ~Statistics() = default;
     std::string ToString() const override {
-        return "\"Network bytes received\" " + std::to_string(bytes_);
+        return "\"Network bytes received\" " + std::to_string(bytes_.load());
     }
     void Reset() override {
-        bytes_ = 0;
+        bytes_.store(0);
     }
     void AddBytes(uint64_t bytes) {
         bytes_ += bytes;
     }
 
 private:
-    uint64_t bytes_ = 0;
+    std::atomic<uint64_t> bytes_{0};
 };
 
 } //namespace network
